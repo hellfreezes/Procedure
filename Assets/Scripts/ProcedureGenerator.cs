@@ -5,10 +5,10 @@ using UnityEngine;
 public class ProcedureGenerator : MonoBehaviour
 {
     Mesh currntMesh;
-    int spriteWidth = 1;
-    int spriteHeight = 1;
-    int textureWidth = 1;
-    int textureHeight = 1;
+    int spriteWidth = 128;
+    int spriteHeight = 128;
+    int textureWidth = 1024;
+    int textureHeight = 1024;
 
     // Start is called before the first frame update
     void Start()
@@ -60,15 +60,18 @@ public class ProcedureGenerator : MonoBehaviour
 
     Vector2[] GetUV(int u, int v)
     {
-        float w = textureWidth / spriteWidth;
-        float h = textureHeight / spriteHeight;
+        float w = spriteWidth / textureWidth;
+        float h = spriteHeight / textureHeight;
+
+        float uN = w * u;
+        float vN = h * v;
 
         Vector2[] result = new Vector2[4];
 
-        result[0] = new Vector2(0, 0);
-        result[1] = new Vector2(0, 0.125f);
-        result[2] = new Vector2(0.125f, 0.125f);
-        result[3] = new Vector2(0.125f, 0);
+        result[0] = new Vector2(uN, vN);
+        result[1] = new Vector2(uN, vN + h);
+        result[2] = new Vector2(uN + w, vN + h);
+        result[3] = new Vector2(uN + w, vN);
 
         return result;
     }
