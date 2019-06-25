@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Polygon
 {
+    public Vector3 Position { get; set; }
+    public string Name { get; set; }
     public Vector3[] Vertices { get; set; }
     public int[] Triangles { get; set; }
     public Vector2[] UV { get; set; }
@@ -13,6 +15,9 @@ public class Polygon
     public Polygon(float x, float y, float z, float sizeX, float sizeY, float sizeZ)
     {
         TriangleIndex = new int[2];
+        Position = new Vector3(x, y, z);
+
+        Name = "[" + x + "," + y + "]";
 
         Vector3 p1 = new Vector3(x, y, z);
         Vector3 p2 = new Vector3(x, y, z + sizeZ);

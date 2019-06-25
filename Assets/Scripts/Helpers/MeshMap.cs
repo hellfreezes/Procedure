@@ -29,50 +29,6 @@ public class MeshMap : MonoBehaviour
         polygons.Add(p);
     }
 
-    //void UpdateMesh(Polygon p)
-    //{
-    //    Vector3[] newVertices = new Vector3[mesh.vertices.Length + p.Vertices.Length];
-    //    Debug.Log("Добавлено вершин: " + newVertices.Length);
-    //    int[] newTris = new int[mesh.triangles.Length + p.Triangles.Length];
-    //    Debug.Log("Добавлено треугольников: " + newTris.Length);
-
-    //    int vertCounter = 0;
-               
-    //    // Добавить имеющиеся вершины в список
-    //    for (int i = 0; i < mesh.vertices.Length; i++)
-    //    {
-    //        newVertices[i] = mesh.vertices[i];
-    //        vertCounter++;
-    //    }
-
-    //    // Добавить треугольники которые были в список
-    //    for (int i = 0; i < mesh.triangles.Length; i++)
-    //    {
-    //        newTris[i] = mesh.triangles[i];
-    //    }
-
-    //    // Добавить новые вершины
-    //    for (int i = 0; i < p.Vertices.Length; i++)
-    //    {
-    //        newVertices[i + mesh.vertices.Length] = p.Vertices[i];
-    //    }
-
-    //    // Добавить новые треугольники
-    //    for (int i = 0; i < p.Triangles.Length; i++)
-    //    {
-    //        newTris[i + mesh.triangles.Length] = p.Triangles[i]+ vertCounter;
-    //    }
-
-    //    // заменить новыми данными данные меша
-    //    mesh.Clear();
-    //    mesh.vertices = newVertices;
-    //    mesh.triangles = newTris;
-
-    //    mesh.RecalculateBounds();
-    //    mesh.RecalculateNormals();
-    //    mesh.Optimize();
-    //}
-
     void UpdateMesh()
     {
         UpdateCount();
@@ -127,6 +83,8 @@ public class MeshMap : MonoBehaviour
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
         mesh.Optimize();
+
+        GetComponent<MeshCollider>().sharedMesh = mesh;
     }
 
     void UpdateCount()
@@ -153,9 +111,32 @@ public class MeshMap : MonoBehaviour
         return null;
     }
 
+    void Extrude(Polygon p)
+    {
+        AddPolygon(p.Position.x, p.Position.y + 1, p.Position.z, 1, 0, 1);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                Transform objectHit = hit.transform;
+
+                Debug.Log(objectHit);
+
+                Polygon p = FindByTriangle(hit.triangleIndex);
+                if (p != null)
+                {
+                    Extrude(p);
+                    UpdateMesh();
+                }
+            }
+        }
     }
 }
