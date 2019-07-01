@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MeshBuilder : ThreadedProcess
 {
-    byte[] faces = new byte[Chunk.size.x * Chunk.size.y * Chunk.size.x];
+    byte[] faces = new byte[Chunk.size.x * Chunk.size.y * Chunk.size.z];
 
     Vector3[] vertices;
     Vector2[] uvs;
@@ -15,7 +15,7 @@ public class MeshBuilder : ThreadedProcess
 
     int sizeEstimate = 0;
     int vertexIndex = 0, triangleIndex = 0;
-    bool isVisible = true;
+    bool isVisible = false;
 
     public MeshBuilder(Vector3Int pos, Block[] blocks)
     {
@@ -71,6 +71,8 @@ public class MeshBuilder : ThreadedProcess
                         faces[index] |= (byte)Direction.East;
                         sizeEstimate += 4;
                     }
+
+                    isVisible = true;
 
                     index++;
                 }
