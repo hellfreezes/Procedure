@@ -34,39 +34,82 @@ public class MeshBuilder : ThreadedProcess
             {
                 for (int z = 0; z < Chunk.size.z; z++)
                 {
-                    if (blocks[index].IsTransparent())
+                    // Debug.Log("Index: " + index + " z:" + z);
+
+                    // Блок - это воздух, не обыгываем. Переход к новому элементу
+                    if (blocks[index].IsTransparent())//== Block.Air)
                     {
                         faces[index] = 0;
                         index++;
                         continue;
                     }
 
+                    //Куда смотрят стороны блока:
+
+                    // На ЮГ
                     if (z == 0)
                     {
                         faces[index] |= (byte)Direction.South;
                         sizeEstimate += 4;
                     }
+                    else if (z > 0 && blocks[index - 1] == Block.Air)
+                    {
+                        faces[index] |= (byte)Direction.South;
+                        sizeEstimate += 4;
+                    }
+
+                    // На СЕВЕР
                     if (z == Chunk.size.z - 1)
                     {
                         faces[index] |= (byte)Direction.North;
                         sizeEstimate += 4;
+                    } else if (z < Chunk.size.z - 1 && blocks[index + 1] == Block.Air)
+                    {
+                        faces[index] |= (byte)Direction.North;
+                        sizeEstimate += 4;
                     }
+
+                    // ВНИЗ
                     if (y == 0)
                     {
                         faces[index] |= (byte)Direction.Down;
                         sizeEstimate += 4;
+                    } else if (y > 0 && blocks[index - Chunk.size.z] == Block.Air)
+                    {
+                        faces[index] |= (byte)Direction.Down;
+                        sizeEstimate += 4;
                     }
-                    if (y == Chunk.size.z - 1)
+
+                    // ВВЕРХ
+                    if (y == Chunk.size.y - 1)
                     {
                         faces[index] |= (byte)Direction.Up;
                         sizeEstimate += 4;
                     }
+                    else if (y < Chunk.size.y - 1 && blocks[index + Chunk.size.z] == Block.Air)
+                    {
+                        faces[index] |= (byte)Direction.Up;
+                        sizeEstimate += 4;
+                    }
+
+                    // На ВОСТОК
                     if (x == 0)
                     {
                         faces[index] |= (byte)Direction.West;
                         sizeEstimate += 4;
+                    } else if (x > 0 && blocks[index - Chunk.size.z * Chunk.size.y] == Block.Air)
+                    {
+                        faces[index] |= (byte)Direction.West;
+                        sizeEstimate += 4;
                     }
+
+
+                    // На ЗАПАД
                     if (x == Chunk.size.z - 1)
+                    {
+                        faces[index] |= (byte)Direction.East;
+                        sizeEstimate += 4;
+                    } else if (x < Chunk.size.z - 1 && blocks[index + Chunk.size.z * Chunk.size.y] == Block.Air)
                     {
                         faces[index] |= (byte)Direction.East;
                         sizeEstimate += 4;
@@ -78,6 +121,11 @@ public class MeshBuilder : ThreadedProcess
                 }
             }
         }
+        if (isVisible == false)
+        {
+            return;
+        }
+
 
         index = 0;
 
@@ -99,20 +147,134 @@ public class MeshBuilder : ThreadedProcess
                         continue;
                     }
 
+                    //if ((faces[index] & (byte)Direction.North) != 0)
+                    //{
+                    //    vertices[vertexIndex] = new Vector3(x + position.x, y + position.y, z + position.z + 1);
+                    //    vertices[vertexIndex + 1] = new Vector3(x + position.x + 1, y + position.y, z + position.z + 1);
+                    //    vertices[vertexIndex + 2] = new Vector3(x + position.x, y + position.y + 1, z + position.z + 1);
+                    //    vertices[vertexIndex + 3] = new Vector3(x + position.x + 1, y + position.y + 1, z + position.z + 1);
+
+                    //    triangles[triangleIndex] = vertexIndex + 1;
+                    //    triangles[triangleIndex + 1] = vertexIndex + 2;
+                    //    triangles[triangleIndex + 2] = vertexIndex;
+
+                    //    triangles[triangleIndex + 3] = vertexIndex + 1;
+                    //    triangles[triangleIndex + 4] = vertexIndex + 3;
+                    //    triangles[triangleIndex + 5] = vertexIndex + 2;
+
+                    //    vertexIndex += 4;
+                    //    triangleIndex += 6;
+                    //}
                     if ((faces[index] & (byte)Direction.North) != 0)
                     {
+
                         vertices[vertexIndex] = new Vector3(x + position.x, y + position.y, z + position.z + 1);
                         vertices[vertexIndex + 1] = new Vector3(x + position.x + 1, y + position.y, z + position.z + 1);
                         vertices[vertexIndex + 2] = new Vector3(x + position.x, y + position.y + 1, z + position.z + 1);
                         vertices[vertexIndex + 3] = new Vector3(x + position.x + 1, y + position.y + 1, z + position.z + 1);
 
                         triangles[triangleIndex] = vertexIndex + 1;
-                        triangles[triangleIndex + 1] = vertexIndex + 1;
+                        triangles[triangleIndex + 1] = vertexIndex + 2;
                         triangles[triangleIndex + 2] = vertexIndex;
 
                         triangles[triangleIndex + 3] = vertexIndex + 1;
                         triangles[triangleIndex + 4] = vertexIndex + 3;
                         triangles[triangleIndex + 5] = vertexIndex + 2;
+
+                        vertexIndex += 4;
+                        triangleIndex += 6;
+                    }
+                    if ((faces[index] & (byte)Direction.East) != 0)
+                    {
+
+                        vertices[vertexIndex] = new Vector3(x + position.x + 1, y + position.y, z + position.z);
+                        vertices[vertexIndex + 1] = new Vector3(x + position.x + 1, y + position.y, z + position.z + 1);
+                        vertices[vertexIndex + 2] = new Vector3(x + position.x + 1, y + position.y + 1, z + position.z);
+                        vertices[vertexIndex + 3] = new Vector3(x + position.x + 1, y + position.y + 1, z + position.z + 1);
+
+                        triangles[triangleIndex] = vertexIndex;
+                        triangles[triangleIndex + 1] = vertexIndex + 2;
+                        triangles[triangleIndex + 2] = vertexIndex + 1;
+
+                        triangles[triangleIndex + 3] = vertexIndex + 2;
+                        triangles[triangleIndex + 4] = vertexIndex + 3;
+                        triangles[triangleIndex + 5] = vertexIndex + 1;
+
+                        vertexIndex += 4;
+                        triangleIndex += 6;
+                    }
+                    if ((faces[index] & (byte)Direction.South) != 0)
+                    {
+
+                        vertices[vertexIndex] = new Vector3(x + position.x, y + position.y, z + position.z);
+                        vertices[vertexIndex + 1] = new Vector3(x + position.x + 1, y + position.y, z + position.z);
+                        vertices[vertexIndex + 2] = new Vector3(x + position.x, y + position.y + 1, z + position.z);
+                        vertices[vertexIndex + 3] = new Vector3(x + position.x + 1, y + position.y + 1, z + position.z);
+
+                        triangles[triangleIndex] = vertexIndex;
+                        triangles[triangleIndex + 1] = vertexIndex + 2;
+                        triangles[triangleIndex + 2] = vertexIndex + 1;
+
+                        triangles[triangleIndex + 3] = vertexIndex + 2;
+                        triangles[triangleIndex + 4] = vertexIndex + 3;
+                        triangles[triangleIndex + 5] = vertexIndex + 1;
+
+                        vertexIndex += 4;
+                        triangleIndex += 6;
+                    }
+                    if ((faces[index] & (byte)Direction.West) != 0)
+                    {
+
+                        vertices[vertexIndex] = new Vector3(x + position.x, y + position.y, z + position.z);
+                        vertices[vertexIndex + 1] = new Vector3(x + position.x, y + position.y, z + position.z + 1);
+                        vertices[vertexIndex + 2] = new Vector3(x + position.x, y + position.y + 1, z + position.z);
+                        vertices[vertexIndex + 3] = new Vector3(x + position.x, y + position.y + 1, z + position.z + 1);
+
+                        triangles[triangleIndex] = vertexIndex + 1;
+                        triangles[triangleIndex + 1] = vertexIndex + 2;
+                        triangles[triangleIndex + 2] = vertexIndex;
+
+                        triangles[triangleIndex + 3] = vertexIndex + 1;
+                        triangles[triangleIndex + 4] = vertexIndex + 3;
+                        triangles[triangleIndex + 5] = vertexIndex + 2;
+
+                        vertexIndex += 4;
+                        triangleIndex += 6;
+                    }
+                    if ((faces[index] & (byte)Direction.Up) != 0)
+                    {
+
+                        vertices[vertexIndex] = new Vector3(x + position.x, y + position.y + 1, z + position.z);
+                        vertices[vertexIndex + 1] = new Vector3(x + position.x + 1, y + position.y + 1, z + position.z);
+                        vertices[vertexIndex + 2] = new Vector3(x + position.x, y + position.y + 1, z + position.z + 1);
+                        vertices[vertexIndex + 3] = new Vector3(x + position.x + 1, y + position.y + 1, z + position.z + 1);
+
+                        triangles[triangleIndex] = vertexIndex;
+                        triangles[triangleIndex + 1] = vertexIndex + 2;
+                        triangles[triangleIndex + 2] = vertexIndex + 1;
+
+                        triangles[triangleIndex + 3] = vertexIndex + 2;
+                        triangles[triangleIndex + 4] = vertexIndex + 3;
+                        triangles[triangleIndex + 5] = vertexIndex + 1;
+
+                        vertexIndex += 4;
+                        triangleIndex += 6;
+                    }
+                    if ((faces[index] & (byte)Direction.Down) != 0)
+                    {
+
+                        vertices[vertexIndex] = new Vector3(x + position.x, y + position.y, z + position.z);
+                        vertices[vertexIndex + 1] = new Vector3(x + position.x, y + position.y, z + position.z + 1);
+                        vertices[vertexIndex + 2] = new Vector3(x + position.x + 1, y + position.y, z + position.z);
+                        vertices[vertexIndex + 3] = new Vector3(x + position.x + 1, y + position.y, z + position.z + 1);
+
+                        triangles[triangleIndex] = vertexIndex;
+                        triangles[triangleIndex + 1] = vertexIndex + 2;
+                        triangles[triangleIndex + 2] = vertexIndex + 1;
+
+                        triangles[triangleIndex + 3] = vertexIndex + 2;
+                        triangles[triangleIndex + 4] = vertexIndex + 3;
+                        triangles[triangleIndex + 5] = vertexIndex + 1;
 
                         vertexIndex += 4;
                         triangleIndex += 6;

@@ -27,7 +27,10 @@ public class Chunk
             {
                 for (int z = 0; z < size.z; z++)
                 {
-                    blocks[index] = Block.Filled;
+                    if (Mathf.PerlinNoise(x / 16f, z / 16f) * 5f + 20f > y)
+                    {
+                        blocks[index] = Block.Filled;
+                    }
                     index++;
                 }
             }
