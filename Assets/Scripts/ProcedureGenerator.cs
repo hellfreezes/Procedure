@@ -13,9 +13,9 @@ public class ProcedureGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Vector3[] vert;
+        //Vector3[] vert;
         //Vector2[] uv;
-        int[] tri;
+        //int[] tri;
         List<Polygon> polyMap = new List<Polygon>();
 
 
