@@ -9,7 +9,8 @@ public class Chunk
     public Vector3Int position;
     public bool ready = false;
 
-    Block[] blocks;
+    public Block[] blocks;
+    public byte[] faces;
 
     public Chunk(Vector3Int pos)
     {
@@ -27,10 +28,16 @@ public class Chunk
             {
                 for (int z = 0; z < size.z; z++)
                 {
+                    // Генерация шума по оси Y - таким образом получаем псевдо случайную карту
                     int value = Mathf.CeilToInt(Mathf.PerlinNoise((x + position.x) / 32f, (z + position.z) / 32f) * 15f + 84f);
 
                     if (y + position.y > value)
                     {
+                        // Генерация структур (платформ и тд)
+                        if (y + position.y == value + 7 && Random.Range(0, 15) == 1)
+                        {
+                            StructureGenerator.GenerateWoodenPlatform(position, x, y, z, blocks);
+                        }
                         index++;
                         continue;
                     }
@@ -53,6 +60,8 @@ public class Chunk
                 }
             }
         }
+
+        StructureGenerator.GetWaitingBlock(position, blocks);
     }
 
     public IEnumerator GenerateMesh()
@@ -63,6 +72,8 @@ public class Chunk
         yield return new WaitUntil(() => builder.Update());
 
         mesh = builder.GetMesh(ref mesh);
+        //faces = builder.GetFaces(ref faces);
+
         ready = true;
         builder = null;
     }

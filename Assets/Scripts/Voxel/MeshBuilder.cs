@@ -23,10 +23,12 @@ public class MeshBuilder : ThreadedProcess
         this.blocks = blocks;
     }
 
+    // главная функция генерирующая мешь в многопоточности
     public override void ThreadFunction()
     {
         int index = 0;
 
+        // Поиск соседних чанков
         Chunk[] neighbors = new Chunk[6];
         bool[] exists = new bool[6];
 
@@ -45,10 +47,8 @@ public class MeshBuilder : ThreadedProcess
             {
                 for (int z = 0; z < Chunk.size.z; z++)
                 {
-                    // Debug.Log("Index: " + index + " z:" + z);
-
                     // Блок - это воздух, не обыгываем. Переход к новому элементу
-                    if (blocks[index].IsTransparent())//== Block.Air)
+                    if (blocks[index] == Block.Air)
                     {
                         faces[index] = 0;
                         index++;

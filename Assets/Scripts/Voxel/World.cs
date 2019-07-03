@@ -17,7 +17,7 @@ public class World : MonoBehaviour
     public int radius = 2;
     public int height = 8;
 
-    public static World Instance { get => instance; }
+    public static World Instance { get { return instance; } }
 
     private void Awake()
     {
